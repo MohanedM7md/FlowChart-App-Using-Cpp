@@ -1,6 +1,6 @@
 #include "Statement.h"
-
-Statement::Statement()	
+int Statement::nextid = 0;
+Statement::Statement():uniqueid(nextid++)
 { 
 	//TODO: set the ID with a unique value
 	Text = "";

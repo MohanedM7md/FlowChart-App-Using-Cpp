@@ -1,8 +1,8 @@
 #ifndef VALUE_ASSIGN_H
 #define VALUE_ASSIGN_H
-
+#include "..\Actions\Action.h"
+class ApplicationManager;
 #include "Statement.h"
-
 //Value Assignment statement class
 //The value assignment statement assigns a value to a variable
 class ValueAssign : public Statement
@@ -22,7 +22,7 @@ private:
 	                        //      we will begin with start statement then its output connector
 	                        //      then the connector's destination statement and so on (follow the connectors)
 
-	Point Inlet;	//A point where connections enters this statement 
+	Point Inlet[3];	//A point where connections enters this statement 
 	                //It's used as the (End) point of the (Input) connectors
 	Point Outlet;	//A point a connection leaves this statement
 	                //It's used as the (Start) point of the (Output) connector
@@ -33,10 +33,11 @@ private:
 	
 public:
 	ValueAssign(Point Lcorner, string LeftHS="", double RightHS=0);
-	
+	ValueAssign();
+	void Save(std::ofstream& outputfile);
+	void Load(std::ifstream& file);
 	void setLHS(const string &L);
 	void setRHS(double R);
-
 	virtual void Draw(Output* pOut) const;
 
 	virtual bool IsPointInMe(Point clickedPoint);
@@ -48,7 +49,7 @@ public:
 	virtual int getConnCnt();
 
 	virtual char returnPointIn(Point& pIn); //retrun the inlit Point
-	virtual char returnPointOut(Point& pOut); // Return the Outlet Point location
+	virtual void returnPointOut(Point& pOut); // Return the Outlet Point location
 	virtual bool IsOutletFull(); //Check if the Statment already have Outlet connetor
 
 	~ValueAssign();

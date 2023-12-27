@@ -12,7 +12,7 @@ void Select::ReadActionParameters()
 	Output* pOut = pManager->GetOutput();
 	Input* pIn = pManager->GetInput();
 
-	pOut->PrintMessage("Click on the statement you want to select");
+	pOut->PrintMessage("Click to on the statement you want to select");
 	pIn->GetPointClicked(Postion);
 	pOut->ClearStatusBar();
 }
@@ -21,11 +21,11 @@ void Select::ReadActionParameters()
 void Select::Execute() 
 {
 	ReadActionParameters();
-	//get what is already in before new one selction
+
 	Statement* oldstat = pManager->GetSelectedStatement();
-	Connector* oldconn = pManager->GetSelectedConn();
-	//get the new selected obj.
 	Statement* newstat = pManager->GetStatement(Postion);
+
+	Connector* oldconn = pManager->GetSelectedConn();
 	Connector* newconn = pManager->GetConnector(Postion);
 
 	
@@ -43,16 +43,14 @@ void Select::Execute()
 		pManager->SetSelectedConn(false);
 	}
 	
-	if (newstat != NULL) {//if he slected a statment
-
+	if (newstat != NULL) {
 		if (newstat == oldstat)//if the user clicked on the same Statment then return
-			return;//we don't need to make it selected again after unselect it
+			return;//we don't need to make make it selected again after unselect it
 
 		pManager->SetSelectedStatement(newstat);
 		newstat->SetSelected(true);//else if it another one then select it 
 	}
 	else {
-
 		if (newconn == oldconn)//the same for connector
 			return;
 

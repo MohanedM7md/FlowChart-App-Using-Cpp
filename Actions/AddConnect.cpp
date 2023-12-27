@@ -14,32 +14,16 @@ void AddConnect::ReadActionParameters()
 
 	pOut->PrintMessage("Click on the start Point");
 	pIn->GetPointClicked(pointOut);
-	Statement* StOut = pManager->GetStatement(pointOut); // get the statement did the user clicked on
-
-	while (StOut == NULL) {//If the User didn't click on any statment he have to choose or to cancel
-
-		if (pointOut.y <= 50 && pointOut.x >= UI.MenuItemWidth * ADD_CONNECTOR && pointOut.x <= UI.MenuItemWidth * (1 + ADD_CONNECTOR)) //if the user want to cancel he can click on the toolbar
-			return;
-		
-		pOut->PrintMessage("Error you have to choose a statment try again or click on the Icon again to cancel.");
+	while (pManager->GetStatement(pointOut) == NULL) {
+		pOut->PrintMessage("Error you have to choose a statment try again.");
 		pIn->GetPointClicked(pointOut);
-		StOut = pManager->GetStatement(pointOut);
-		pOut->ClearStatusBar();
 	}
-
 	pOut->PrintMessage("Click on the End Point");
 	pIn->GetPointClicked(pointIn);
 	pOut->ClearStatusBar();
-	Statement*  StIn = pManager->GetStatement(pointIn);// get the statement did the user clicked on
-
-	while (StIn == NULL) {//If the User didn't click on any statment he have to choose or to cancel
-
-		if (pointIn.y <= 50 && pointIn.x >= UI.MenuItemWidth * ADD_CONNECTOR && pointIn.x <= UI.MenuItemWidth * (1 + ADD_CONNECTOR)) //if the user want to cancel he can click on the toolbar
-			return;
-
-		pOut->PrintMessage("Error you have to choose a statment try again or click on the Icon again to cancel.");
+	while (pManager->GetStatement(pointIn) == NULL) {
+		pOut->PrintMessage("Error you have to choose a statment try again.");
 		pIn->GetPointClicked(pointIn);
-		StIn = pManager->GetStatement(pointIn);
 		pOut->ClearStatusBar();
 	}
 }
@@ -48,33 +32,21 @@ void AddConnect::ReadActionParameters()
 void AddConnect::Execute()
 {
 	ReadActionParameters();
+	Statement* Stout = pManager->GetStatement(pointOut);
 
-	Output* pOut = pManager->GetOutput();
-	Statement* StOut = pManager->GetStatement(pointOut); // get outlet Statement 
-	Statement* StIn = pManager->GetStatement(pointIn);// get the inlet Statement
-
-	if (pointIn.y < 50 || pointOut.y < 50)
-		return;
-
-	if (StOut == StIn) {
-		pOut->PrintMessage("Sorry you can't connect to self statement");
-		return;
+	if (Stout->IsOutletFull()){
+		pManager->GetOutput()->PrintMessage("Error!! this Statment Already \
+			Have outlet connector.");//checks
+		return;																			//if the Statment not already have outlet
 	}
-	if (StOut->IsOutletFull()){
-		pOut->PrintMessage("Error!! this Statment Already \
-			Have outlet connector.");//checksif the Statment not already have outlet
-		return;																		
-	}
+	Statement* Stin = pManager->GetStatement(pointIn);
+	Point pout;
+	Stout->returnPointOut(pout);
+	Point pin = pout;
+	char arrowDir = Stin->returnPointIn(pin);
 	
-	 //update the location where the connector will out from.
-	pointOut = pointIn;
-	char outletDir = StOut->returnPointOut(pointOut);//update the location where the connector will in to. and return the arrow direction
-
-	char arrowDir = StIn->returnPointIn(pointIn);//update the location where the connector will in to. and return the arrow direction
-	
-	Connector* Cadd = new Connector(StOut, StIn, pointOut, pointIn, arrowDir, outletDir);
+	Connector* Cadd = new Connector(Stout, Stin, pout, pin, arrowDir);
 	pManager->AddConnector(Cadd);
-
-	StOut->SetConnectorOut(Cadd); //make the statment point to connector out from it
-	StIn->SetConnectorIn(Cadd); //make the statment point to connector enter to it
+	Stout->SetConnectorOut(Cadd);
+	Stin->SetConnectorIn(Cadd);
 }

@@ -1,84 +1,94 @@
 #include "End.h"
-#include <sstream>
-
-using namespace std;
-
-End::End(Point middletop):pOutConn(NULL)
-{
-	// Note: The LeftHS and RightHS should be validated inside (AddValueAssign) action
-	//       before passing it to the constructor of VarAssign
-	for (int i = 0; i < 2; i++) {
-		Connectors[i] = NULL;
-	}
-	connectedCnt = 2;
-	UpdateStatementText();
-
-	this->middletop = middletop;
-	Inlet.x = middletop.x+ UI.START_END_WIDTH/2;
-	Inlet.y = middletop.y;
-
-	Outlet.x = Inlet.x;
-	Outlet.y = middletop.y + UI.START_END_HI;
-	//No connectors yet
-}
 
 
-void End::Draw(Output* pOut) const
-{
-	//Call Output::DrawAssign function to draw assignment statement 	
-	pOut->DrawEnd(middletop, UI.START_END_WIDTH, UI.START_END_HI, Selected);
+End::End(ApplicationManager * AM, string txt, Point l_cor, int width, int height, int t_width, int t_height)
+: Statement(AM, txt, l_cor, width, height, t_width, t_height){
+
+	pConn = NULL;
+	calc_l_corner();
 
 }
 
-bool End::IsPointInMe(Point clickedPoint)
-{
-	//if the point in the area of the assign return true
-	return (middletop.x <= clickedPoint.x && middletop.y <= clickedPoint.y &&
-		clickedPoint.x <= middletop.x + UI.ASSGN_WDTH &&
-		clickedPoint.y <= middletop.y + UI.ASSGN_HI);
-}
-void End::SetConnectorIn(Connector* cn)
-{
-	pInConn = cn;
-	Connectors[1] = pInConn;
-}
+void End::Draw(Output* pOut) const {
 
-void End::SetConnectorOut(Connector* cn)
-{
-	pOutConn = cn;
-	Connectors[0] = pOutConn;
-}
-
-Connector** End::returnConnectors()
-{
-	return Connectors;
-}
-
-int End::getConnCnt()
-{
-	return this->connectedCnt;
-}
-
-char End::returnPointIn(Point& pIn)
-{
-	pIn = Inlet;
-	return 'U';
-}
-char End::returnPointOut(Point& pOut)
-{
-	pOut = Outlet;
-	return 'D';
-}
-bool End::IsOutletFull()
-{
-	return pOutConn != NULL;
-}
-End::~End()
-{
+	pOut->Draw_st_end(l_corner, width, height, Text, Selected);
 
 }
-//This function should be called when LHS or RHS changes
-void End::UpdateStatementText()
-{
 
+bool End::Edit(){
+
+	Point x;
+	pOut->ClearStatusBar();
+	pOut->PrintMessage("Can't be edited , chick any where");
+	pIn->GetPointClicked(x);
+	pOut->ClearStatusBar();
+	return false;
+
+}
+
+void End::UpdateStatementText(){
+
+}
+
+void End::GenerateCode(ofstream &OutFile){
+
+	OutFile << "  return 0;";
+	SetGenerated(true);
+}
+
+bool End::check_range(Point p)
+{
+	Point centre;
+	centre.x = l_corner.x + width / 2;
+	centre.y = l_corner.y + height / 2;
+	if ((double((p.y - centre.y) * (p.y - centre.y)) / double(height*height*0.25)) + (double((p.x - centre.x) * (p.x - centre.x)) / double(width*width*0.25)) > 1)
+		return false;
+	else
+		return true;
+}
+
+void End::Save(ofstream &OutFile)
+{
+	OutFile << "END"<<"             "<< ID << "  " << l_corner.x << "  " << l_corner.y<<" ";
+	
+	OutFile << "\"" << comment << "\"" << endl;
+}
+
+
+void End::Load(ifstream & Infile)
+{
+	Infile >> ID >> l_corner.x >> l_corner.y;
+	getline(Infile, comment);
+	Text = "End";
+	set_stat_dim(Text);
+	SetInlet();
+	SetOutlet();
+	comment.erase(comment.begin());
+	comment.erase(comment.end()-1);
+	
+}
+
+void End::calc_l_corner()
+{
+	AppMan->GetInput()->calc_stat_corner(inlet, l_corner, width);
+}
+
+void End::PrintInfo(Output * pOut)
+{
+	pOut->PrintMessage(comment);
+}
+
+void End::set_stat_dim(string str)
+{
+	pIn->set_ellipse_Dim(Text,width,height,t_width,t_height);
+}
+
+bool End::Simulate(){
+	return true;
+}
+Connector* End ::GetConnect(){
+	return pConn;
+}
+void End:: SetConnect(Connector*p){
+	pConn = p;
 }

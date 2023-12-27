@@ -155,13 +155,34 @@
     <ClCompile Include="GUI\Output.cpp">
       <Filter>GUI Classes</Filter>
     </ClCompile>
-    <ClCompile Include="Actions\Select.cpp">
-      <Filter>Action Classes</Filter>
-    </ClCompile>
     <ClCompile Include="Actions\AddConnect.cpp">
       <Filter>Action Classes</Filter>
     </ClCompile>
     <ClCompile Include="Actions\Delete.cpp">
+      <Filter>Action Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Actions\Select.cpp">
+      <Filter>Action Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Actions\Saveaction.cpp">
+      <Filter>Action Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Actions\Loadaction.cpp">
+      <Filter>Action Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Actions\AddEnd.cpp">
+      <Filter>Action Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Actions\AddOperatorAssign.cpp">
+      <Filter>Action Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Actions\AddStart.cpp">
+      <Filter>Action Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Actions\AddVarAssign.cpp">
+      <Filter>Action Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Actions\Validate.cpp">
       <Filter>Action Classes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -255,13 +276,34 @@
     <ClInclude Include="GUI\UI_Info.h">
       <Filter>GUI Classes</Filter>
     </ClInclude>
-    <ClInclude Include="Actions\Select.h">
-      <Filter>Action Classes</Filter>
-    </ClInclude>
     <ClInclude Include="Actions\AddConnect.h">
       <Filter>Action Classes</Filter>
     </ClInclude>
     <ClInclude Include="Actions\Delete.h">
+      <Filter>Action Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Actions\Select.h">
+      <Filter>Action Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Actions\Saveaction.h">
+      <Filter>Action Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Actions\Loadaction.h">
+      <Filter>Action Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Actions\AddEnd.h">
+      <Filter>Action Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Actions\AddOperatorAssign.h">
+      <Filter>Action Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Actions\AddStart.h">
+      <Filter>Action Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Actions\AddVarAssign.h">
+      <Filter>Action Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Actions\Validate.h">
       <Filter>Action Classes</Filter>
     </ClInclude>
   </ItemGroup>

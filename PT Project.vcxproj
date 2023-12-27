@@ -125,8 +125,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actions\AddConnect.cpp" />
+    <ClCompile Include="Actions\AddEnd.cpp" />
+    <ClCompile Include="Actions\AddOperatorAssign.cpp" />
+    <ClCompile Include="Actions\AddStart.cpp" />
+    <ClCompile Include="Actions\AddVarAssign.cpp" />
     <ClCompile Include="Actions\Delete.cpp" />
+    <ClCompile Include="Actions\Loadaction.cpp" />
+    <ClCompile Include="Actions\Saveaction.cpp" />
     <ClCompile Include="Actions\Select.cpp" />
+    <ClCompile Include="Actions\Validate.cpp" />
     <ClCompile Include="CMUgraphicsLib\auxil.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -286,8 +293,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actions\AddConnect.h" />
+    <ClInclude Include="Actions\AddEnd.h" />
+    <ClInclude Include="Actions\AddOperatorAssign.h" />
+    <ClInclude Include="Actions\AddStart.h" />
+    <ClInclude Include="Actions\AddVarAssign.h" />
     <ClInclude Include="Actions\Delete.h" />
+    <ClInclude Include="Actions\Loadaction.h" />
+    <ClInclude Include="Actions\Saveaction.h" />
     <ClInclude Include="Actions\Select.h" />
+    <ClInclude Include="Actions\Validate.h" />
     <ClInclude Include="CMUgraphicsLib\auxil.h" />
     <ClInclude Include="CMUgraphicsLib\CMUgraphics.h" />
     <ClInclude Include="CMUgraphicsLib\colors.h" />

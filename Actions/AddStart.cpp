@@ -1,59 +1,74 @@
 #include "AddStart.h"
 
-
-
 #include "..\ApplicationManager.h"
 
 #include "..\GUI\input.h"
 #include "..\GUI\Output.h"
 
-#include <sstream>
-using namespace std;
+AddStart::AddStart(ApplicationManager *pAppManager) :Action(pAppManager)
+{
+	draw = true;
+	redo = false;
+}
 
-//constructor: set the ApplicationManager pointer inside this action
-AddStart::AddStart(ApplicationManager *pAppManager):Action(pAppManager)
-{}
 
 void AddStart::ReadActionParameters()
 {
-	Input *pIn = pManager->GetInput();
 	Output *pOut = pManager->GetOutput();
-	
-	//Read the (Position) parameter
-	pOut->PrintMessage("Start Statement: Click to add the statement");
-
-	pIn->GetPointClicked(Position);
-	pOut->ClearStatusBar();		
-	while (Position.y >= (UI.height - UI.ToolBarHeight) || Position.y <= UI.ToolBarHeight || Position.x >= UI.DrawingAreaWidth) {
-		if (Position.y <= 50 && Position.x >= UI.MenuItemWidth * ADD_START && Position.x <= UI.MenuItemWidth * (1 + ADD_START)) //if the user want to cancel he can click on the toolbar
-			return;
-		Pause(100);//wait before show this mesage to make it not apearing as freezed give more dynamicaly
-		pManager->GetOutput()->PrintMessage("this region is not allowed put it in drwing area!!");
-		pIn->GetPointClicked(Position);
-		pOut->ClearStatusBar();
+	Input *pIn = pManager->GetInput();
+	pOut->PrintMessage("Start  Statement: Left Click on empty space to add the statement or Right click to cancel");
+	if (!pIn->GetPointClicked(inlet)){
+		txt = "";
+		return;
 	}
 
-	//Note: You should validate the LHS to be variable name and RHS to be a value
-	//      Call the appropriate functions for this.
+	txt = "Start";
+	pIn->set_ellipse_Dim(txt, width, height, t_width, t_height);
+	int count = 0;
+	Point lcorner;
+	pIn->calc_stat_corner(inlet, lcorner, width);
+	string str;
+	while ((!pIn->candraw(lcorner, pManager, height, width) && count != 11) || (pIn->intersect_with_connector(height, width, lcorner, pManager))){
+		str = to_string(count);
+		pOut->PrintMessage("choose another position to draw         Error counter:" + str + "     be careful  error count max =10");
+		if (!pIn->GetPointClicked(inlet)){
+			txt = "";
+			return;
+		}
+		pIn->calc_stat_corner(inlet, lcorner, width);
+		count++;
+		draw = pIn->candraw(lcorner, pManager, height, width);
+	}
+	if (count != 11)
+		pOut->PrintMessage("statement added correctly");
 }
 
-void AddStart::Execute()
-{
+void AddStart::Execute(){
+
 	ReadActionParameters();
-		
-	if (Position.y <= 50 && Position.x >= UI.MenuItemWidth * ADD_VAR_ASSIGN && Position.x <= UI.MenuItemWidth * (1 + ADD_VAR_ASSIGN)) //if the user want to cancel he can click on the toolbar
+
+	if (txt == ""){
+		pManager->GetOutput()->PrintMessage("Canceled. !!");
+		SetUndo(false);
 		return;
+	}
 
-	//Calculating left corner of assignement statement block
-	Point middletop;
-	middletop.x = Position.x - UI.START_END_WIDTH/2;
-	middletop.y = Position.y ;
+	if (draw){
+		newstat = new Start(pManager, txt, inlet, width, height, t_width, t_height);
 
-	Start*pstart= new Start(middletop);
-
-	//TODO: should set the LHS and RHS of pAssign statement
-	//      with the data members set and validated before in ReadActionParameters()
-
-	pManager->AddStatement(pstart); // Adds the created statement to application manger's statement list
+		pManager->AddStatement(newstat);
+	}
+	else
+		SetUndo(false);
 }
 
+void AddStart::undo(){
+	if (!redo){
+		pManager->RemoveStatment(newstat);
+		redo = true;
+	}
+	else{
+		pManager->AddStatement(newstat);
+		redo = false;
+	}
+}

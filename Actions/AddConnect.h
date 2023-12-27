@@ -11,15 +11,14 @@ class AddConnect : public Action
 private:
 	Point pointIn;
 	Point pointOut;
-
 public:
 	AddConnect(ApplicationManager *pManager);
 
 	//Reads rectangle parameters
 	virtual void ReadActionParameters();
-	
+
 	//Add rectangle to the ApplicationManager
-	virtual void Execute();
+	virtual void Execute() ;
 	
 };
 

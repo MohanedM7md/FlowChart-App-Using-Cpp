@@ -1,8 +1,50 @@
 #include "Connector.h"
-Connector::Connector(Statement* Src, Statement* Dst, Point start, Point end,char arrowDir , char outletDir):Selected(false),Start(start),End(end), arrowDir(arrowDir), SrcStat(Src), DstStat(Dst), outletDir(outletDir)
+#include<fstream>
+#include"Statements/Statement.h"
+#include "ApplicationManager.h"
+using namespace std;
+Connector::Connector(Statement* Src, Statement* Dst, Point start, Point end,char arrowDir ):Selected(false),Start(start),End(end), arrowDir(arrowDir), SrcStat(Src), DstStat(Dst)
 //When a connector is created, it must have a source statement and a destination statement
 //There are NO FREE connectors in the flowchart
 {
+}
+Connector::Connector() : Selected(false), Start(), End(), arrowDir('\0'), SrcStat(nullptr), DstStat(nullptr) {
+	// Additional initialization code if needed
+}
+void Connector::Save(ofstream& file) {
+	int srcindex = -1;
+	int dstindex = -1;
+
+	if (SrcStat)
+		srcindex = SrcStat->GetID();
+	if (DstStat)
+		dstindex = DstStat->GetID();
+	file.write(reinterpret_cast<const char*>(&srcindex), sizeof(int));
+	file.write(reinterpret_cast<const char*>(&dstindex), sizeof(int));
+	file.write(reinterpret_cast<const char*>(&Start), sizeof(Point));
+	file.write(reinterpret_cast<const char*>(&End), sizeof(Point));
+	file.write(&arrowDir, sizeof(char));
+	file.write(reinterpret_cast<const char*>(&Selected), sizeof(bool));
+
+}
+void Connector::Load(std::ifstream& file, Statement* statList, int statListSize) {
+	int srcIndex, dstIndex;
+	file.read(reinterpret_cast<char*>(&srcIndex), sizeof(int));
+	file.read(reinterpret_cast<char*>(&dstIndex), sizeof(int));
+
+	if (srcIndex >= 0 && srcIndex < statListSize)
+		SrcStat = &statList[srcIndex];
+
+	if (dstIndex >= 0 && dstIndex < statListSize)
+		DstStat = &statList[dstIndex];
+	file.read(reinterpret_cast<char*>(&Start), sizeof(Point));
+	file.read(reinterpret_cast<char*>(&End), sizeof(Point));
+
+	file.read(&arrowDir, sizeof(char));
+
+	file.read(reinterpret_cast<char*>(&Selected), sizeof(bool));
+
+
 }
 
 void Connector::setSrcStat(Statement *Src)
@@ -32,7 +74,7 @@ Point Connector::getEndPoint()
 
 void Connector::Draw(Output* pOut) const
 {
-	pOut->DrawConnector(Start,End,  outletDir, arrowDir, Selected);
+	pOut->DrawConnector(Start,End, arrowDir, Selected);
 }
 
 bool Connector::IsPointOnMe(Point p)

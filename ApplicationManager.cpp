@@ -1,17 +1,171 @@
 #include "ApplicationManager.h"
-#include "Actions\AddStart.h"
 #include "Actions\AddValueAssign.h"
-#include "Actions\AddVarAssign.h"
-#include "Actions\AddOperatorAssign.h"
-#include "Actions\AddCond.h"
 #include "Actions\Select.h"
 #include "Actions\AddConnect.h"
 #include "Actions\Delete.h"
-#include "Actions\AddEnd.h"
 #include "GUI\Input.h"
 #include "GUI\Output.h"
+#include "Actions\Delete.h"
+#include "Actions\AddVarAssign.h"
+#include "Actions\AddStart.h"
+#include "Actions\AddOperatorAssign.h"
+#include "Actions\AddEnd.h"
 #include <iostream>
+#include "Actions/Loadaction.h"
+#include "Actions/Saveaction.h"
+#include <fstream>
+#include<string>
 //Constructor
+Statement* ApplicationManager::StatementFactory(int statementType) {
+	switch (statementType) {
+	case ITM_VALUE_ASSIGN:
+		return new ValueAssign();
+		
+	default:
+		return nullptr; 
+	}
+}
+bool ApplicationManager::CheckValidation() const {
+
+	if (StatCount == 0) {
+		pOut->PrintMessage("It looks like there are no statements at all. !!!!");
+		return false;
+	}
+
+	int startnum = 0, endnum = 0;
+	bool valid = true;
+
+	for (int i = 0; i < StatCount; i++) {
+		if (dynamic_cast<Start*>(StatList[i]))
+			startnum++;
+		else if (dynamic_cast<End*>(StatList[i]))
+			endnum++;
+
+		//check the statement to be connected as a source
+		if (StatList[i]->IsOutletFull() == NULL && !(dynamic_cast<End*>(StatList[i])) && !(dynamic_cast<Conditional*>(StatList[i]))) {
+			valid = false;
+			break;
+		}
+		//check the statement to be connected as a destination
+		if (!(StatList[i]->IsOutletFull() && !(dynamic_cast<Start*>(StatList[i]))) {
+			valid = false;
+			break;
+		}
+		if (dynamic_cast<Conditional*>(StatList[i])) {
+			Conditional* p = (Conditional*)StatList[i];
+			if (p->get_NConn() == NULL || p->get_YConn() == NULL) {
+				valid = false;
+				break;
+				if (dynamic_cast<ValueAssign*>(StatList[i])) {
+					ValueAssign* pValueAssign = static_cast<ValueAssign*>(StatList[i]);
+
+					// Example: Check if the variable is initialized
+					if (!pValueAssign->IsVariableInitialized()) {
+						valid = false;
+						break;
+					}
+
+				}
+			}
+		}
+		if (startnum != 1 || endnum != 1) {
+			valid = false;
+		}
+
+		if (!valid)
+			pOut->PrintMessage("Invalid Chart !! check the statements and again.");
+		else
+			pOut->PrintMessage("Good Work , The Chart is Valid");
+
+		return valid;
+
+	}
+}
+void ApplicationManager::LoadStatements(std::ifstream& file) {
+	for (int i = 0; i < StatCount; ++i) {
+		int statementType;
+		file.read(reinterpret_cast<char*>(&statementType), sizeof(int));
+
+		
+		Statement* loadedStatement = StatementFactory(statementType);
+
+		if (loadedStatement) {
+			loadedStatement->Load(file);
+	
+			StatList[i] = loadedStatement;  
+		}
+		else {
+			std::cerr << "Unknown statement type: " << statementType << std::endl;
+		}
+
+	}
+}
+void ApplicationManager::LoadConnectors(std::ifstream& file) {
+	for (int i = 0; i < StatCount; ++i) {
+		
+		Connector* loadedConnector = new Connector();
+		loadedConnector->Load(file, *StatList, StatCount);
+
+		ConnList[i] = loadedConnector;
+	}
+}
+void ApplicationManager::EmptyAllLists()
+{
+	for (int i = 0; i < ConnCount; i++)
+	{
+		delete ConnList[i];
+	}
+	for (int i = 0; i < StatCount; i++)
+	{
+		delete StatList[i];
+	}
+	ConnCount = 0;
+	StatCount = 0;
+}
+void ApplicationManager::Saveall(std::string filename) {
+	std::ofstream file(filename, std::ios::binary);
+
+	if (file.is_open()) {
+		file.write(reinterpret_cast<const char*>(&StatCount), sizeof(int));
+		file.write(reinterpret_cast<const char*>(&ConnCount), sizeof(int));
+		for (int i = 0; i < StatCount; ++i) {
+			std::cout << "Saving statement " << i << std::endl;
+			StatList[i]->Save(file);
+		}
+
+		for (int i = 0; i < ConnCount; ++i) {
+			std::cout << "Saving connector " << i << std::endl;
+			ConnList[i]->Save(file);
+		}
+
+		file.close();
+		std::cout << "Save successful." << std::endl;
+	}
+	else {
+		std::cout << "Unable to open file: " << filename << std::endl;
+	}
+}
+
+void ApplicationManager:: Loadall(std::string filename) {
+	std::ifstream file(filename, std::ios::binary);
+EmptyAllLists();
+	if (file.is_open()) {
+		file.read(reinterpret_cast<char*>(&StatCount), sizeof(int));
+		file.read(reinterpret_cast<char*>(&ConnCount), sizeof(int));
+		LoadStatements(file);
+		LoadConnectors(file);
+
+
+		
+
+		file.close();
+		std::cout << "Load successful." << std::endl;
+	}
+	else {
+		std::cerr << "Unable to open file: " << filename << std::endl;
+	}
+}
+
 ApplicationManager::ApplicationManager()
 {
 	//Create Input and output
@@ -53,14 +207,14 @@ void ApplicationManager::ExecuteAction(ActionType ActType)
 	//According to ActioType, create the corresponding action object
 	switch (ActType)
 	{
+		case ADD_VALUE_ASSIGN:
+			pAct = new AddValueAssign(this);
+			break;
 		case ADD_START:
 			pAct = new AddStart(this);
 			break;
-			case ADD_END:
+		case ADD_END:
 			pAct = new AddEnd(this);
-			break;
-		case ADD_VALUE_ASSIGN:
-			pAct = new AddValueAssign(this);
 			break;
 		case ADD_VAR_ASSIGN:
 			pAct = new AddVarAssign(this);
@@ -70,8 +224,7 @@ void ApplicationManager::ExecuteAction(ActionType ActType)
 			break;
 
 		case ADD_CONDITION:
-			pAct = new AddCond(this);
-			break;
+			///create AddCondition Action here
 
 			break;
 		case DEL:
@@ -81,18 +234,14 @@ void ApplicationManager::ExecuteAction(ActionType ActType)
 		case ADD_CONNECTOR:
 			pAct = new AddConnect(this);
 			break;
-
+		case SAVE:
+			pAct = new Saveaction(this);
+			break;
 		case SELECT:
 			pAct = new Select(this);
 			break;
-
-		case SWITCH_SIM_MODE:
-			pOut->CreateSimulationToolBar();
-			
-			break;
-		case SWITCH_DSN_MODE:
-			pOut->CreateDesignToolBar();
-			
+		case LOAD:
+			pAct = new Loadaction(this);
 			break;
 		case EXIT:
 			///create Exit Action here
@@ -147,7 +296,6 @@ void ApplicationManager::DeleteStatement(Statement* pStat)
 		if (StatList[i] == pStat)
 			break;
 	delete StatList[i];
-	StatList[i] = NULL;
 
 	StatList[i] = StatList[StatCount-1];
 	StatList[StatCount - 1] = NULL;
@@ -159,12 +307,10 @@ void ApplicationManager::DeleteConn(Connector* pStat)
 	for (; i < ConnCount; i++)
 		if (ConnList[i] == pStat)
 			break;
-
 	delete ConnList[i];
-	ConnList[i] = NULL;
 
 	ConnList[i] = ConnList[ConnCount - 1];
-	ConnList[ConnCount - 1] = NULL;
+	ConnList[StatCount - 1] = NULL;
 	ConnCount--;
 }
 void ApplicationManager::AddConnector(Connector* pConn)
@@ -229,9 +375,6 @@ void ApplicationManager::UpdateInterface() const
 		ConnList[i]->Draw(pOut);
 
 }
-////////////////////////////////////////////////////////////////////
-////////
-
 ////////////////////////////////////////////////////////////////////////////////////
 //Return a pointer to the input
 Input *ApplicationManager::GetInput() const

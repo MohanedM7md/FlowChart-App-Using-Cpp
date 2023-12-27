@@ -5,9 +5,8 @@
 #include "..\Connector.h"
 //class Output;
 #include "..\GUI\Output.h"
-
 //Base class for all Statements
-class Statement
+class Statement 
 {
 protected:
 	int ID;			//Each Statement has an ID --> must be unique
@@ -16,14 +15,19 @@ protected:
 	int connectedCnt;
 
 	virtual void UpdateStatementText() = 0;	//is called when any part of the stat. is edited	
-
+	int uniqueid;
+	static int nextid;
 	/// Add more parameters if needed.
 
 public:
 	Statement();
+	int GetID() const {
+		return uniqueid;
+	}
 	void SetSelected(bool s);
 	bool IsSelected() const;
-
+	virtual void Save(std::ofstream& outputfile) = 0;
+virtual	void Load(std::ifstream& file) = 0;
 	virtual void Draw(Output* pOut) const  = 0 ;	//Draw the statement
 	
 	virtual bool IsPointInMe(Point clickedPoint) = 0; //this function checks if the entered point is in it's area
@@ -35,7 +39,7 @@ public:
 	virtual int getConnCnt()= 0;
 	
 	virtual char returnPointIn(Point &pIn) = 0;//retrun the inlit Point
-	virtual char returnPointOut(Point& pOut) = 0; // Return the Outlet Point location
+	virtual void returnPointOut(Point& pOut) = 0; // Return the Outlet Point location
 	
 	virtual bool IsOutletFull() = 0; //Add connector to the Statment
 	///TODO:The following functions should be supported by the Statement class

@@ -7,7 +7,7 @@ class Input;
 class Output;
 
 #include "..\GUI\UI_Info.h"
-#include "..\CMUgraphicsLib/auxil.h"
+
 
 //Base class for all possible actions
 class Action
@@ -15,7 +15,7 @@ class Action
 protected:
 	
 	//Pointer to ApplicationManager because action needs this pointer for its functions
-	ApplicationManager *pManager;
+	ApplicationManager *pManager;	
 
 public:
 

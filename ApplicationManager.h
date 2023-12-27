@@ -1,70 +1,72 @@
 #ifndef APPLICATION_MANAGER_H
 #define APPLICATION_MANAGER_H
 
+#include "Actions\AddValueAssign.h"
+#include "Actions\Select.h"
+#include "Actions\AddConnect.h"
+#include "Actions\Delete.h"
+#include "GUI\Input.h"
+#include "GUI\Output.h"
+#include "Actions/Loadaction.h"
+#include "Actions/Saveaction.h"
+#include <fstream>
+#include <string>
 #include "DEFS.h"
-#include "Statements\Statement.h"
-#include <utility>
-
-class Input;
-class Output;
-
-
-//Main class that manages everything in the application.
-class ApplicationManager
-{
-	enum { MaxCount = 200 };	//Max no of statements/connectors in a single flowchart
-
+#define MaxCount 200
+class ApplicationManager {
 private:
-	int StatCount;		//Actual number of statements
-	int ConnCount;		//Actual number of connectors
-	Statement* StatList[MaxCount];	//List of all statements (Array of pointers)
-	Connector* ConnList[MaxCount];	//List of all connectors (Array of pointers)
-	Connector* pSelectedConn;
-
-	Statement *pSelectedStat; //a pointer to the last selected statement
-	                          //you can set and get this pointer
-	Statement *pClipboard;    //a pointer to the last copied/cut statement
-	                          //you can set and get this pointer
-
-	//Pointers to Input and Output classes
-	Input *pIn;
-	Output *pOut;
+    Output* pOut;
+    Input* pIn;
 
 
-public:	
-	ApplicationManager(); 
-	~ApplicationManager();
-	
-	// == Actions Related Functions ==
-	ActionType GetUserAction() const; //Reads the input command from the user 
-	                                  //and returns the corresponding action type
-	void ExecuteAction(ActionType) ;  //Creates an action and executes it
-	
-	// == Statements/Connector Management Functions ==
-	void AddStatement(Statement* pStat);    //Adds a new Statement to the Flowchart
-	Statement *GetStatement(Point P) const;	//Searches for a statement where point P belongs
-	                                        //TODO: Complete its implementation 
-	                                        //      WITHOUT breaking class responsibilities
-	void DeleteStatement(Statement* pStat);
-	void DeleteConn(Connector* pStat);
+    int StatCount;
+    int ConnCount;
 
-	void AddConnector(Connector* pConn);    //Adds a new Connector to the Flowchart
-	Connector *GetConnector(Point P) const;	//search for a Connector where point P belongs
-	void SetSelectedConn(Connector* pStat);
-	Connector* GetSelectedConn() const;
+    Statement* pSelectedStat;
+    Connector* pSelectedConn;
+    Statement* pClipboard;
 
-	// Note: you should use the following 4 functions 
-	//       in order not to break class responsibilities (especially in copy, cut and paste)
-	Statement *GetSelectedStatement() const;	 //Returns the selected Statement
-	void SetSelectedStatement(Statement *pStat); //Set the Statement selected by the user
-	Statement *GetClipboard() const;	         //Returns the Clipboard
-	void SetClipboard(Statement *pStat);         //Set the Clipboard
+    // Private member functions
+    Statement* StatementFactory(int statementType);
+    void LoadStatements(std::ifstream& file);
+    void EmptyAllLists();
+    void LoadConnectors(std::ifstream& file);
 
-	// == Interface Management Functions ==
-	Input *GetInput() const;        //Return pointer to the input
-	Output *GetOutput() const;      //Return pointer to the output
-	void UpdateInterface() const;	//Redraws all the drawing window
+public:
+    Statement* StatList[MaxCount];
+    Connector* ConnList[MaxCount];
+    // Constructor
+    ApplicationManager();
 
+    // Destructor
+    ~ApplicationManager();
+
+    // Actions Related Functions
+    ActionType GetUserAction() const;
+    void ExecuteAction(ActionType ActType);
+
+    // Statements Management Functions
+    void AddStatement(Statement* pStat);
+    Statement* GetStatement(Point P) const;
+    void DeleteStatement(Statement* pStat);
+    void DeleteConn(Connector* pStat);
+    void AddConnector(Connector* pConn);
+    Connector* GetConnector(Point P) const;
+    void SetSelectedConn(Connector* pStat);
+    Connector* GetSelectedConn() const;
+    Statement* GetSelectedStatement() const;
+    void SetSelectedStatement(Statement* pStat);
+    Statement* GetClipboard() const;
+    void SetClipboard(Statement* pStat);
+
+    // Interface Management Functions
+    void UpdateInterface() const;
+    Input* GetInput() const;
+    Output* GetOutput() const;
+    bool ApplicationManager::CheckValidation() const;
+    // Save and Load
+    void Saveall(std::string filename);
+    void Loadall(std::string filename);
 };
 
-#endif
+#endif // APPLICATION_MANAGER_H
