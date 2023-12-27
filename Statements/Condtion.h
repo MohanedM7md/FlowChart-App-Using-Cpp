@@ -8,7 +8,6 @@
 class Condtion : public Statement
 {
 private:
-	char ID = 1;
 	struct pOutConn {
 	public:
 		Connector* pOutConn;
@@ -44,6 +43,7 @@ private:
 	
 public:
 	Condtion(Point TVertix, string LeftHS, string Oper, string RightHS);
+	Condtion(const Condtion *Cond, Point TVertix);
 	
 	void setLHS(const string &L);
 	void setCompOper(const string &Oper);

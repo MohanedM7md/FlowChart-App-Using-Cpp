@@ -8,7 +8,7 @@
 class Read : public Statement
 {
 private:
-	char ID = 4;
+	
 	string Variable;	//Left Handside of the assignment (name of a variable)
 	
 	Connector* Connectors[2];//put the connector in array

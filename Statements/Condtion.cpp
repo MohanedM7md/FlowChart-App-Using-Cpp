@@ -19,8 +19,7 @@ Condtion::Condtion(Point TVertix, string LeftHS, string Oper, string RightHS):St
 	for (int i = 0; i < 2; i++) {
 		Connectors[i] = NULL;
 	}
-	this->
-	UpdateStatementText();
+	this->UpdateStatementText();
 
 	TopVertix = TVertix;
 	//No connectors yet
@@ -36,11 +35,28 @@ Condtion::Condtion(Point TVertix, string LeftHS, string Oper, string RightHS):St
 	
 }
 
-void Condtion::setLHS(const string &L)
+Condtion::Condtion(const Condtion* Cond,Point TVertix) :Statement(ITM_COND)
 {
-	LHS = L;
-	UpdateStatementText();
+	this->TopVertix = TVertix;
+	LHS = Cond->LHS;
+	CompOperator = Cond->CompOperator;
+	RHS = Cond->RHS;
+	R.YesNo = "NULL";
+	L.YesNo = "NULL";
+	R.pOutConn = NULL;
+	L.pOutConn = NULL;
+	this->UpdateStatementText();
+	Inlet.x = TVertix.x;
+	Inlet.y = TVertix.y;
+
+	OutletR.x = TVertix.x + UI.COND_WDTH / 2;
+	OutletR.y = TVertix.y + UI.COND_HI / 2;
+
+	OutletL.x = TVertix.x - UI.COND_WDTH / 2;
+	OutletL.y = TVertix.y + UI.COND_HI / 2;
 }
+
+
 
 void Condtion::setCompOper(const string& Oper)
 {

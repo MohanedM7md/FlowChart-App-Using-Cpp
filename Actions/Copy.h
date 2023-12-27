@@ -9,7 +9,7 @@
 class Copy: public Action
 {
 private:
-	Statement* SelectedStatetment;
+	
 public:
 	Copy(ApplicationManager* pManager);
 	virtual void Execute();

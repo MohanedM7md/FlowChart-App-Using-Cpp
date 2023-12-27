@@ -1,6 +1,7 @@
 #ifndef Paste_H
 #define Paste_H
 #include "..\Statements\Statement.h"
+#include "..\Statements\Condtion.h"
 #include "Action.h"
 #include "..\ApplicationManager.h"
 
@@ -10,11 +11,12 @@ class Paste: public Action
 {
 private:
 	Point Position;
-	Statement* CopiedStatement;
+	
 public:
 	Paste(ApplicationManager* pManager);
-	virtual void Execute();
 	virtual void ReadActionParameters();
+
+	virtual void Execute();
 };
 
 #endif

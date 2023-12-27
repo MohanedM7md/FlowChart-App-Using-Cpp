@@ -8,7 +8,6 @@
 class End : public Statement
 {
 private:
-	char ID = 2;
 	Connector* Connectors[2];//put the connector in array
 	Connector* pOutConn;	//Value Assignment Stat. has one Connector to next statement
 	Connector* pInConn;	//Value Assignment Stat. has one Connector to next statement

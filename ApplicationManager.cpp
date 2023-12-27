@@ -4,6 +4,7 @@
 #include "Actions\AddWrite.h"
 #include "Actions\Cut.h"
 #include "Actions\Copy.h"
+#include "Actions\Paste.h"
 #include "Actions\AddValueAssign.h"
 #include "Actions\AddVarAssign.h"
 #include "Actions\AddOperatorAssign.h"
@@ -83,6 +84,10 @@ void ApplicationManager::ExecuteAction(ActionType ActType)
 			break;	
 		case COPY:
 			pAct = new Copy(this);
+
+			break;	
+		case PASTE:
+			pAct = new Paste(this);
 
 			break;	
 		case CUT:

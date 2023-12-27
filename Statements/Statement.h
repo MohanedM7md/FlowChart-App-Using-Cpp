@@ -22,6 +22,7 @@ protected:
 
 public:
 	Statement(int Type);
+	Statement(Statement* CopiedState,int Type);
 	void SetSelected(bool s);
 	bool IsSelected() const;
 
@@ -42,6 +43,10 @@ public:
 	virtual char returnPointOut(Point& pOut) = 0; // Return the Outlet Point location
 	
 	virtual bool IsOutletFull() = 0; //Add connector to the Statment
+
+	int GetStatementType();
+	string GetText();
+	void SetText(const string &txt);
 	///TODO:The following functions should be supported by the Statement class
 	///		It should then be overridden by each derived Statement
 	///		Decide the parameters that you should pass to each function and its return type

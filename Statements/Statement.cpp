@@ -7,6 +7,11 @@ Statement::Statement(int Type):StateType(Type)
 	Selected = false;		
 }
 
+Statement::Statement(Statement* CopiedState, int Type):StateType(Type)
+{
+	this->Text = CopiedState->GetText();
+}
+
 void Statement::SetSelected(bool s)
 {	Selected = s; }
 
@@ -23,3 +28,17 @@ int Statement::GetStatementID()
 	return ID;
 }
 
+int Statement::GetStatementType()
+{
+	return StateType;
+}
+
+string Statement::GetText()
+{
+	return this->Text;
+}
+
+void Statement::SetText(const string& txt)
+{
+	this->Text = txt;
+}

@@ -8,7 +8,7 @@
 class ValueAssign : public Statement
 {
 private:
-	char ID = 6;
+	
 	string LHS;	//Left Handside of the assignment (name of a variable)
 	double RHS;	//Right Handside (Value)
 	Connector* Connectors[2];//put the connector in array
